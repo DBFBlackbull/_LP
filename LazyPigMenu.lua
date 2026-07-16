@@ -13,6 +13,13 @@ local CheckBoxTables = {
 		[3] = { "LazyPigCheckbox12", "Pass" }
 	},
 
+	["Ahn'Qiraj Roll Automation"] = {
+		[0] = "LazyPigCheckboxGroupAQRoll",
+		[1] = { "LazyPigCheckbox13", "Need" },
+		[2] = { "LazyPigCheckbox14", "Greed" },
+		[3] = { "LazyPigCheckbox15", "Pass" }
+	},
+
 	["World Chat Mute"] = {
 		[0] = "LazyPigCheckboxGroupWorldChatMute",
 		[1] = { "LazyPigCheckbox20", "Dungeons" },
@@ -139,7 +146,7 @@ function LazyPig_CreateOptionsFrame()
 	frame:SetScale(.81)
 
 	frame:SetWidth(480)
-	frame:SetHeight(444)
+	frame:SetHeight(505)
 	
 	frame:SetPoint("TOPLEFT", nil, "TOPLEFT", 250, -50)
 	frame:SetBackdrop( {
@@ -231,14 +238,17 @@ function LazyPig_CreateOptionsFrame()
 	local str = "Zul'Gurub Roll Automation"
 	frame.cbgroup_zgroll = CheckBoxGroup(frame, 20, -107, str, CheckBoxTables[str])
 
+	local str = "Ahn'Qiraj Roll Automation"
+	frame.cbgroup_zgroll = CheckBoxGroup(frame, 20, -168, str, CheckBoxTables[str])
+
 	local str = "World Chat Mute"
-	frame.cbgroup_worldchatmute = CheckBoxGroup(frame, 20, -168, str, CheckBoxTables[str])
+	frame.cbgroup_worldchatmute = CheckBoxGroup(frame, 20, -229, str, CheckBoxTables[str])
 	
 	local str = "Battlegrounds Automation"
-	frame.cbgroup_bgautomation = CheckBoxGroup(frame, 20, -244, str, CheckBoxTables[str])
+	frame.cbgroup_bgautomation = CheckBoxGroup(frame, 20, -305, str, CheckBoxTables[str])
 	
 	local str = "Nameplates Display Rules"
-	frame.cbgroup_nameplates = CheckBoxGroup(frame, 20, -348, str, CheckBoxTables[str])
+	frame.cbgroup_nameplates = CheckBoxGroup(frame, 20, -409, str, CheckBoxTables[str])
 	
 	local str = "Smart Salvation Remover"
 	frame.cbgroup_salvationremover = CheckBoxGroup(frame, 250, -195, str, CheckBoxTables[str])

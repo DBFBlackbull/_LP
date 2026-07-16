@@ -122,6 +122,9 @@ local LazyPigMenuStrings = {
 		[10]= "Need",
 		[11]= "Greed",
 		[12]= "Pass",
+		[13]= "Need",
+		[14]= "Greed",
+		[15]= "Pass",
 		[20]= "Dungeon",
 		[21]= "Raid",
 		[22]= "Battleground",
@@ -527,7 +530,7 @@ function LazyPig_OnEvent(event)
 		LazyPig_EndSplit()	
 			
 	elseif(event == "START_LOOT_ROLL") then
-		LazyPig_ZGRoll(arg1)
+		LazyPig_AutoRoll(arg1)
 	
 	elseif(event == "CHAT_MSG_LOOT") then
 		if (string.find(arg1 ,"You won") or string.find(arg1 ,"You receive")) and (string.find(arg1 ,"cffa335e") or string.find(arg1, "cff0070d") or string.find(arg1, "cffff840")) and not string.find(arg1 ,"Bijou") and not string.find(arg1 ,"Idol") and not string.find(arg1 ,"Shard") then
@@ -949,41 +952,109 @@ function LazyPig_BagReturn(find)
 	return nil
 end
 
-function LazyPig_ZGRoll(id)
-	RollReturn = function()
+local zgItems = {
+	-- Coins
+	[19698] = true,
+	[19699] = true,
+	[19700] = true,
+	[19701] = true,
+	[19702] = true,
+	[19703] = true,
+	[19704] = true,
+	[19705] = true,
+	[19706] = true,
+	--Bijous
+	[19707] = true,
+	[19708] = true,
+	[19709] = true,
+	[19710] = true,
+	[19711] = true,
+	[19712] = true,
+	[19713] = true,
+	[19714] = true,
+	[19715] = true,
+}
+
+local aqItems = {
+	-- Scarabs
+	[20858] = true,
+	[20859] = true,
+	[20860] = true,
+	[20861] = true,
+	[20862] = true,
+	[20863] = true,
+	[20864] = true,
+	[20865] = true,
+	-- Idols
+	[20866] = true,
+	[20867] = true,
+	[20868] = true,
+	[20869] = true,
+	[20870] = true,
+	[20871] = true,
+	[20872] = true,
+	[20873] = true,
+	[20874] = true,
+	[20875] = true,
+	[20876] = true,
+	[20877] = true,
+	[20878] = true,
+	[20879] = true,
+	[20881] = true,
+	[20882] = true,
+	-- Scarab Coffer Keys
+	[21761] = true,
+	[21762] = true,
+	-- Scarab Bag
+	[21156] = true,
+}
+
+function LazyPig_GetRollReturnFunc(config)
+	return function()
 		local txt = ""
-		if LPCONFIG.ZG == 1 then
+		if config == 1 then
 			txt = "NEED"
-		elseif LPCONFIG.ZG == 2 then
+		elseif config == 2 then
 			txt = "GREED"
-		elseif LPCONFIG.ZG == 0 then
+		elseif config == 0 then
 			txt = "PASS"
 		end
 		return txt
 	end
-	if LPCONFIG.ZG then	
-		local _, name, _, quality = GetLootRollItemInfo(id);
-		if string.find(name ,"Hakkari Bijou") or string.find(name ,"Coin") then
-			RollOnLoot(id, LPCONFIG.ZG);
-			local _, _, _, hex = GetItemQualityColor(quality)
-			DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..RollReturn().." "..GetLootRollItemLink(id))
-			return
-		end	
-	end	
+end
+
+function LazyPig_AutoRoll(id)
+	local itemLink = GetLootRollItemLink(id);
+	local _, itemID = LazyPig_DecodeItemLink(itemLink)
+	if not itemID or not quality then
+		return
+	end
+
+	local _, _, _, quality = GetLootRollItemInfo(id);
+	if not quality then
+		return
+	end
+
+	local _, _, _, hex = GetItemQualityColor(quality)
+
+	if LPCONFIG.ZG and zgItems[itemID] then
+		RollReturn = LazyPig_GetRollReturnFunc(LPCONFIG.ZG)
+		RollOnLoot(id, LPCONFIG.ZG);
+		DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..RollReturn().." "..itemLink)
+		return
+	end
+
+	if LPCONFIG.AQ and aqItems[itemID] then
+		RollReturn = LazyPig_GetRollReturnFunc(LPCONFIG.AQ)
+		RollOnLoot(id, LPCONFIG.AQ);
+		DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..RollReturn().." "..itemLink)
+		return
+	end
 end
 
 function LazyPig_GreenRoll()
-	RollReturn = function()
-		local txt = ""
-		if LPCONFIG.GREEN == 1 then
-			txt = "NEED"
-		elseif LPCONFIG.GREEN == 2 then
-			txt = "GREED"
-		elseif LPCONFIG.GREEN == 0 then
-			txt = "PASS"
-		end
-		return txt
-	end
+	RollReturn = LazyPig_GetRollReturnFunc(LPCONFIG.GREEN)
+
 	local pass = nil
 	if LPCONFIG.GREEN then	
 		for i=1, NUM_GROUP_LOOT_FRAMES do
@@ -1296,8 +1367,7 @@ function LazyPig_DecodeItemLink(link)
 	if link then
 		local found, _, id, name = string.find(link, "item:(%d+):.*%[(.*)%]")
 		if found then
-			id = tonumber(id)
-			return name, id
+			return name, tonumber(id)
 		end
 	end
 	return nil
@@ -1732,6 +1802,9 @@ function LazyPig_GetOption(num)
 	or num == 10 and LPCONFIG.ZG == 1
 	or num == 11 and LPCONFIG.ZG == 2
 	or num == 12 and LPCONFIG.ZG == 0
+	or num == 13 and LPCONFIG.AQ == 1
+	or num == 14 and LPCONFIG.AQ == 2
+	or num == 15 and LPCONFIG.AQ == 0
 	or num == 20 and LPCONFIG.WORLDDUNGEON
 	or num == 21 and LPCONFIG.WORLDRAID
 	or num == 22 and LPCONFIG.WORLDBG
@@ -1781,12 +1854,12 @@ end
 
 function LazyPig_SetOption(num)
 	local checked = this:GetChecked()
-	if num == 00 then 
+	if num == 00 then
 		LPCONFIG.GREEN = 1
 		if not checked then LPCONFIG.GREEN = nil end
 		LazyPigMenuObjects[01]:SetChecked(nil)
 		LazyPigMenuObjects[02]:SetChecked(nil)
-	elseif num == 01 then 
+	elseif num == 01 then
 		LPCONFIG.GREEN = 2
 		if not checked then LPCONFIG.GREEN = nil end
 		LazyPigMenuObjects[00]:SetChecked(nil)
@@ -1796,22 +1869,37 @@ function LazyPig_SetOption(num)
 		if not checked then LPCONFIG.GREEN = nil end
 		LazyPigMenuObjects[00]:SetChecked(nil)
 		LazyPigMenuObjects[01]:SetChecked(nil)
-	elseif num == 10 then 
+	elseif num == 10 then
 		LPCONFIG.ZG = 1
 		if not checked then LPCONFIG.ZG = nil end
 		LazyPigMenuObjects[11]:SetChecked(nil)
 		LazyPigMenuObjects[12]:SetChecked(nil)
-	elseif num == 11 then 
+	elseif num == 11 then
 		LPCONFIG.ZG= 2
 		if not checked then LPCONFIG.ZG = nil end
 		LazyPigMenuObjects[10]:SetChecked(nil)
 		LazyPigMenuObjects[12]:SetChecked(nil)
-	elseif num == 12 then 
-		LPCONFIG.ZG = 0 
+	elseif num == 12 then
+		LPCONFIG.ZG = 0
 		if not checked then LPCONFIG.ZG = nil end
 		LazyPigMenuObjects[10]:SetChecked(nil)
 		LazyPigMenuObjects[11]:SetChecked(nil)
-	elseif num == 20 then															
+	elseif num == 13 then
+		LPCONFIG.AQ = 1
+		if not checked then LPCONFIG.AQ = nil end
+		LazyPigMenuObjects[14]:SetChecked(nil)
+		LazyPigMenuObjects[15]:SetChecked(nil)
+	elseif num == 14 then
+		LPCONFIG.AQ= 2
+		if not checked then LPCONFIG.AQ = nil end
+		LazyPigMenuObjects[13]:SetChecked(nil)
+		LazyPigMenuObjects[15]:SetChecked(nil)
+	elseif num == 15 then
+		LPCONFIG.AQ = 0
+		if not checked then LPCONFIG.AQ = nil end
+		LazyPigMenuObjects[13]:SetChecked(nil)
+		LazyPigMenuObjects[14]:SetChecked(nil)
+	elseif num == 20 then
 		LPCONFIG.WORLDDUNGEON = true					--fixed
 		if not checked then LPCONFIG.WORLDDUNGEON = nil end
 		if LPCONFIG.WORLDDUNGEON or LPCONFIG.WORLDRAID or LPCONFIG.WORLDBG then 
