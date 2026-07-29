@@ -78,9 +78,10 @@ local CheckBoxTables = {
 	["Chat Filter"] = {
 		[0] = "LazyPigCheckboxChatFilter",
 		[1] = { "LazyPigCheckbox70", "Players' Spam" },
-		[2] = { "LazyPigCheckbox71", "Uncommon Roll" },
-		[3] = { "LazyPigCheckbox72", "Rare Roll" },
-		[4] = { "LazyPigCheckbox73", "Poor-Common Loot" }
+		[2] = { "LazyPigCheckbox71", "Common Roll" },
+		[3] = { "LazyPigCheckbox72", "Uncommon Roll" },
+		[4] = { "LazyPigCheckbox73", "Rare Roll" },
+		[5] = { "LazyPigCheckbox74", "Poor-Common Loot" }
 	},
 }
 --Grey-Common Loot
@@ -249,18 +250,18 @@ function LazyPig_CreateOptionsFrame()
 	
 	local str = "Nameplates Display Rules"
 	frame.cbgroup_nameplates = CheckBoxGroup(frame, 20, -409, str, CheckBoxTables[str])
-	
-	local str = "Smart Salvation Remover"
-	frame.cbgroup_salvationremover = CheckBoxGroup(frame, 250, -195, str, CheckBoxTables[str])
-	
-	local str = "Chat Filter"
-	frame.cbgroup_salvationremover = CheckBoxGroup(frame, 250, -120, str, CheckBoxTables[str])
 
 	local str = "Group Invite Accept Rules"
 	frame.cbgroup_groupinvite = CheckBoxGroup(frame, 250, -45, str, CheckBoxTables[str])
 
+	local str = "Chat Filter"
+	frame.cbgroup_salvationremover = CheckBoxGroup(frame, 250, -120, str, CheckBoxTables[str])
+
+	local str = "Smart Salvation Remover"
+	frame.cbgroup_salvationremover = CheckBoxGroup(frame, 250, -211, str, CheckBoxTables[str])
+	
 	local str = "Single Choice Rules"
-	frame.cbgroup_singlechoise = CheckBoxGroup(frame, 250, -242, str, CheckBoxTables[str])
+	frame.cbgroup_singlechoise = CheckBoxGroup(frame, 250, -258, str, CheckBoxTables[str])
 
 	return frame
 

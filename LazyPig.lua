@@ -147,9 +147,10 @@ local LazyPigMenuStrings = {
 		[61]= "Warrior Shield/Druid Bear",
 		
 		[70]= "Players' Spam",
-		[71]= "Uncommon Roll",
-		[72]= "Rare Roll",
-		[73]= "Poor-Common-Money Loot",
+		[71]= "Common Roll",
+		[72]= "Uncommon Roll",
+		[73]= "Rare Roll",
+		[74]= "Poor-Common-Money Loot",
 		
 		
 		[90]= "Summon Auto Accept",
@@ -412,7 +413,6 @@ function LazyPig_OnEvent(event)
 		this:RegisterEvent("QUEST_GREETING")
 		this:RegisterEvent("UI_ERROR_MESSAGE")
 		this:RegisterEvent("CHAT_MSG_LOOT")
-		--this:RegisterEvent("CHAT_MSG_MONEY")
 		this:RegisterEvent("QUEST_PROGRESS")
 		this:RegisterEvent("QUEST_COMPLETE")
 		this:RegisterEvent("START_LOOT_ROLL")
@@ -1007,26 +1007,29 @@ local aqItems = {
 	[21762] = true,
 	-- Scarab Bag
 	[21156] = true,
+	-- Mounts
+	[21218] = true,
+	[21321] = true,
+	[21323] = true,
+	[21324] = true,
 }
 
-function LazyPig_GetRollReturnFunc(config)
-	return function()
-		local txt = ""
-		if config == 1 then
-			txt = "NEED"
-		elseif config == 2 then
-			txt = "GREED"
-		elseif config == 0 then
-			txt = "PASS"
-		end
-		return txt
+function LazyPig_GetRollText(config)
+	local txt = ""
+	if config == 1 then
+		txt = "NEED"
+	elseif config == 2 then
+		txt = "GREED"
+	elseif config == 0 then
+		txt = "PASS"
 	end
+	return txt
 end
 
 function LazyPig_AutoRoll(id)
 	local itemLink = GetLootRollItemLink(id);
 	local _, itemID = LazyPig_DecodeItemLink(itemLink)
-	if not itemID or not quality then
+	if not itemID then
 		return
 	end
 
@@ -1038,22 +1041,22 @@ function LazyPig_AutoRoll(id)
 	local _, _, _, hex = GetItemQualityColor(quality)
 
 	if LPCONFIG.ZG and zgItems[itemID] then
-		RollReturn = LazyPig_GetRollReturnFunc(LPCONFIG.ZG)
+		local rollText = LazyPig_GetRollText(LPCONFIG.ZG)
 		RollOnLoot(id, LPCONFIG.ZG);
-		DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..RollReturn().." "..itemLink)
+		DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..rollText.." "..itemLink)
 		return
 	end
 
 	if LPCONFIG.AQ and aqItems[itemID] then
-		RollReturn = LazyPig_GetRollReturnFunc(LPCONFIG.AQ)
+		local rollText = LazyPig_GetRollText(LPCONFIG.AQ)
 		RollOnLoot(id, LPCONFIG.AQ);
-		DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..RollReturn().." "..itemLink)
+		DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..rollText.." "..itemLink)
 		return
 	end
 end
 
 function LazyPig_GreenRoll()
-	RollReturn = LazyPig_GetRollReturnFunc(LPCONFIG.GREEN)
+	local rollText = LazyPig_GetRollText(LPCONFIG.GREEN)
 
 	local pass = nil
 	if LPCONFIG.GREEN then	
@@ -1066,7 +1069,7 @@ function LazyPig_GreenRoll()
 					RollOnLoot(id, LPCONFIG.GREEN);
 					local _, _, _, hex = GetItemQualityColor(quality)
 					greenrolltime = GetTime() + 1
-					DEFAULT_CHAT_FRAME:AddMessage("LazyPig: "..hex..RollReturn().."|cffffffff Roll "..GetLootRollItemLink(id))
+					DEFAULT_CHAT_FRAME:AddMessage("LazyPig: "..hex..rollText.."|cffffffff Roll "..GetLootRollItemLink(id))
 					pass = true
 				end
 			end
@@ -1828,9 +1831,10 @@ function LazyPig_GetOption(num)
 	or num == 90 and LPCONFIG.SUMM
 	
 	or num == 70 and LPCONFIG.SPAM
-	or num == 71 and LPCONFIG.SPAM_UNCOMMON
-	or num == 72 and LPCONFIG.SPAM_RARE
-	or num == 73 and LPCONFIG.SPAM_LOOT
+	or num == 71 and LPCONFIG.SPAM_COMMON
+	or num == 72 and LPCONFIG.SPAM_UNCOMMON
+	or num == 73 and LPCONFIG.SPAM_RARE
+	or num == 74 and LPCONFIG.SPAM_LOOT
 	
 	or num == 91 and LPCONFIG.LOOT
 	or num == 92 and LPCONFIG.RIGHT
@@ -2006,13 +2010,16 @@ function LazyPig_SetOption(num)
 	elseif num == 70 then --fixed
 		LPCONFIG.SPAM = true
 		if not checked then LPCONFIG.SPAM = nil end
-	elseif num == 71 then 
+	elseif num == 71 then
+		LPCONFIG.SPAM_COMMON = true
+		if not checked then LPCONFIG.SPAM_COMMON = nil end
+	elseif num == 72 then
 		LPCONFIG.SPAM_UNCOMMON = true
 		if not checked then LPCONFIG.SPAM_UNCOMMON = nil end
-	elseif num == 72 then 
+	elseif num == 73 then
 		LPCONFIG.SPAM_RARE	 = true
 		if not checked then LPCONFIG.SPAM_RARE	 = nil end
-	elseif num == 73 then 
+	elseif num == 74 then
 		LPCONFIG.SPAM_LOOT	 = true
 		if not checked then LPCONFIG.SPAM_LOOT	 = nil end
 		
@@ -2223,22 +2230,25 @@ function LazyPig_ShowBindings(bind, fs, desc)
 end
 
 function LazyPig_ChatFrame_OnEvent(event)
-	if event == "CHAT_MSG_LOOT" or event == "CHAT_MSG_MONEY" then
+	if event == "CHAT_MSG_LOOT" then
 		local bijou = string.find(arg1 ,"Bijou")
 		local coin = string.find(arg1 ,"Coin")
-		
+		local scarab = string.find(arg1 ,"Scarab")
+		local idol = string.find(arg1 ,"Idol")
+
 		local green_roll = greenrolltime > GetTime()
+		local check_common = LPCONFIG.SPAM_COMMON and string.find(arg1 ,"ffffff")
 		local check_uncommon = LPCONFIG.SPAM_UNCOMMON and string.find(arg1 ,"1eff00")
 		local check_rare = LPCONFIG.SPAM_RARE and string.find(arg1 ,"0070dd")
 		local check_loot = LPCONFIG.SPAM_LOOT and (string.find(arg1 ,"9d9d9d") or string.find(arg1 ,"ffffff") or string.find(arg1 ,"Your share of the loot"))
-		local check_money = LPCONFIG.SPAM_LOOT and string.find(arg1 ,"Your share of the loot")
-	
+
 		local check1 = string.find(arg1 ,"You")
 		local check2 = string.find(arg1 ,"won") or string.find(arg1 ,"receive")
-		local check3 = LPCONFIG.ZG and (bijou or coin)
-		local check4 = check1 and not check3 and not green_roll or check2 
+		local checkZG = LPCONFIG.ZG and (bijou or coin)
+		local checkAQ = LPCONFIG.AQ and (scarab or idol)
+		local check4 = check1 and not checkZG and not checkAQ and not green_roll or check2
 
-		if not check4 and (check_uncommon or check_rare) or check_loot and not check1 or check_money then
+		if not check4 and (check_common or check_uncommon or check_rare) or check_loot and not check1 then
 			return
 		end	
 	end
