@@ -6,6 +6,13 @@ local CheckBoxTables = {
 		[3] = { "LazyPigCheckbox02", "Pass" }
 	},
 
+	["Argent Dawn Roll Automation"] = {
+		[0] = "LazyPigCheckboxGroupADRoll",
+		[1] = { "LazyPigCheckbox16", "Need" },
+		[2] = { "LazyPigCheckbox17", "Greed" },
+		[3] = { "LazyPigCheckbox18", "Pass" }
+	},
+
 	["Zul'Gurub Roll Automation"] = {
 		[0] = "LazyPigCheckboxGroupZGRoll",
 		[1] = { "LazyPigCheckbox10", "Need" },
@@ -147,7 +154,7 @@ function LazyPig_CreateOptionsFrame()
 	frame:SetScale(.81)
 
 	frame:SetWidth(480)
-	frame:SetHeight(505)
+	frame:SetHeight(566)
 	
 	frame:SetPoint("TOPLEFT", nil, "TOPLEFT", 250, -50)
 	frame:SetBackdrop( {
@@ -235,21 +242,24 @@ function LazyPig_CreateOptionsFrame()
 
 	local str = "Green Items Roll [Ctrl-Alt]"
 	frame.cbgroup_greedroll = CheckBoxGroup(frame, 20, -45, str, CheckBoxTables[str])
-	
-	local str = "Zul'Gurub Roll Automation"
-	frame.cbgroup_zgroll = CheckBoxGroup(frame, 20, -107, str, CheckBoxTables[str])
 
-	local str = "Ahn'Qiraj Roll Automation"
+	local str = "Argent Dawn Roll Automation"
+	frame.cbgroup_adroll = CheckBoxGroup(frame, 20, -107, str, CheckBoxTables[str])
+
+	local str = "Zul'Gurub Roll Automation"
 	frame.cbgroup_zgroll = CheckBoxGroup(frame, 20, -168, str, CheckBoxTables[str])
 
+	local str = "Ahn'Qiraj Roll Automation"
+	frame.cbgroup_zgroll = CheckBoxGroup(frame, 20, -229, str, CheckBoxTables[str])
+
 	local str = "World Chat Mute"
-	frame.cbgroup_worldchatmute = CheckBoxGroup(frame, 20, -229, str, CheckBoxTables[str])
+	frame.cbgroup_worldchatmute = CheckBoxGroup(frame, 20, -290, str, CheckBoxTables[str])
 	
 	local str = "Battlegrounds Automation"
-	frame.cbgroup_bgautomation = CheckBoxGroup(frame, 20, -305, str, CheckBoxTables[str])
+	frame.cbgroup_bgautomation = CheckBoxGroup(frame, 20, -366, str, CheckBoxTables[str])
 	
 	local str = "Nameplates Display Rules"
-	frame.cbgroup_nameplates = CheckBoxGroup(frame, 20, -409, str, CheckBoxTables[str])
+	frame.cbgroup_nameplates = CheckBoxGroup(frame, 20, -470, str, CheckBoxTables[str])
 
 	local str = "Group Invite Accept Rules"
 	frame.cbgroup_groupinvite = CheckBoxGroup(frame, 250, -45, str, CheckBoxTables[str])
