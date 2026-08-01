@@ -813,7 +813,6 @@ function LazyPig_OnEvent(event)
 				LootSlot(lootSlotID)
 			end
 		end
-
 	elseif(event == "CONFIRM_LOOT_ROLL") then
 		local rollID = arg1
 		local itemLink = GetLootRollItemLink(rollID)
