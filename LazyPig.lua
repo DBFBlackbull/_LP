@@ -775,10 +775,11 @@ function LazyPig_OnEvent(event)
 			end
 		end
 
-		-- GetLootSlotLink() function counts includes the "money item" as an index
+		-- arg1 lootSlotID does not include the "money item" as an index
+		-- GetLootSlotLink() function includes the "money item" as an index
 		local slotLinkID = arg1
 		if moneySlotID and moneySlotID <= slotLinkID then
-			slotLinkID = slotLinkID +1
+			slotLinkID = slotLinkID + 1
 		end
 
 		local itemLink = GetLootSlotLink(slotLinkID)
